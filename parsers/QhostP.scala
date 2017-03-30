@@ -7,7 +7,7 @@ object QhostP {
 
   // Ignored: ARCH, SWAPTO, SWAPUS
 
-case class Node(hostname : String, ncpu: Int, load: Double, memtot: Double, memuse: Double)
+case class Node(hostname : String, arch: String, ncpu: Int, load: Double, memtot: Double, memuse: Double)
 
 
   def fromString( input: String ) : List[QhostP.Node] = {
@@ -39,7 +39,7 @@ case class Node(hostname : String, ncpu: Int, load: Double, memtot: Double, memu
 
 
     val entry : QhostP.Parser.Parser[QhostP.Node] = hostname ~ arch ~ ncpu ~ load ~ memtot ~ memuse ~ rest ^^ {
-      case h ~ a ~ n ~ l ~ mt ~ mu ~ r => Node(h,n,l,mt,mu)
+      case h ~ a ~ n ~ l ~ mt ~ mu ~ r => Node(h,a,n,l,mt,mu)
     }
 
     val entries : QhostP.Parser.Parser[scala.List[QhostP.Node]] = rep1( entry )
