@@ -26,14 +26,15 @@ case class Node(hostname : String, arch: String, ncpu: Int, load: Double, memtot
       case x if x == "-" => 0
       case x => x.toDouble
     }
-    val memtot : QhostP.Parser.Parser[Double] = """[+-]?([0-9]*[.])?[0-9]+(G|M)""".r ^^ {
+    val memtot : QhostP.Parser.Parser[Double] = """[+-]?([0-9]*[.])?[0-9]+(G|M|K)""".r ^^ {
       case x if x.endsWith("M") => "0.".concat(x.dropRight(1).filterNot(_ == '.')).toDouble
       case x if x.endsWith("G") => x.dropRight(1).toDouble
     }
-    val memuse : QhostP.Parser.Parser[Double] = """[+-]?([0-9]*[.])?[0-9]+(G|M)|-""".r ^^ {
+    val memuse : QhostP.Parser.Parser[Double] = """[+-]?([0-9]*[.])?[0-9]+(G|M|K)|-""".r ^^ {
       case x if x == "-" => 0
       case x if x.endsWith("M") => "0.".concat(x.dropRight(1).filterNot(_ == '.')).toDouble
       case x if x.endsWith("G") => x.dropRight(1).toDouble
+      case x if x.endsWith("K") => "0.000".concat(x.dropRight(1).filterNot(_ == '.')).toDouble
     }
     val rest : QhostP.Parser.Parser[String] = """.*""".r
 
