@@ -22,13 +22,15 @@ case class Node(hostname : String, arch: String, ncpu: Int, load: Double, memtot
     val hostname : QhostP.Parser.Parser[String] = """(?m)^[\S]+""".r
     val arch : QhostP.Parser.Parser[String] = """\S*""".r
     val ncpu : QhostP.Parser.Parser[Int] = """\d*""".r ^^ { _.toInt }
-    val load : QhostP.Parser.Parser[Double] = """[+-]?([0-9]*[.])?[0-9]+|-""".r ^^ {
+    val load : QhostP.Parser.Parser[Double] = """([+-]?([0-9]*[.])?[0-9]+)(.|K)?|-""".r ^^ {
       case x if x == "-" => 0
+      case x if x.endsWith("K") => "0.000".concat(x.dropRight(1).filterNot(_ == '.')).toDouble
       case x => x.toDouble
     }
     val memtot : QhostP.Parser.Parser[Double] = """[+-]?([0-9]*[.])?[0-9]+(G|M|K)""".r ^^ {
       case x if x.endsWith("M") => "0.".concat(x.dropRight(1).filterNot(_ == '.')).toDouble
       case x if x.endsWith("G") => x.dropRight(1).toDouble
+      case x if x.endsWith("K") => "0.000".concat(x.dropRight(1).filterNot(_ == '.')).toDouble
     }
     val memuse : QhostP.Parser.Parser[Double] = """[+-]?([0-9]*[.])?[0-9]+(G|M|K)|-""".r ^^ {
       case x if x == "-" => 0
@@ -40,7 +42,7 @@ case class Node(hostname : String, arch: String, ncpu: Int, load: Double, memtot
 
 
     val entry : QhostP.Parser.Parser[QhostP.Node] = hostname ~ arch ~ ncpu ~ load ~ memtot ~ memuse ~ rest ^^ {
-      case h ~ a ~ n ~ l ~ mt ~ mu ~ r => Node(h,a,n,l,mt,mu)
+      case h ~ a ~ n ~ l ~ mt ~ mu ~ r => Node(h,n,l,mt,mu)
     }
 
     val entries : QhostP.Parser.Parser[scala.List[QhostP.Node]] = rep1( entry )
