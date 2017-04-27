@@ -42,7 +42,7 @@ case class Node(hostname : String, arch: String, ncpu: Int, load: Double, memtot
 
 
     val entry : QhostP.Parser.Parser[QhostP.Node] = hostname ~ arch ~ ncpu ~ load ~ memtot ~ memuse ~ rest ^^ {
-      case h ~ a ~ n ~ l ~ mt ~ mu ~ r => Node(h,n,l,mt,mu)
+      case h ~ a ~ n ~ l ~ mt ~ mu ~ r => Node(h,a,n,l,mt,mu)
     }
 
     val entries : QhostP.Parser.Parser[scala.List[QhostP.Node]] = rep1( entry )
